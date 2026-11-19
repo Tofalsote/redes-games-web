@@ -2,7 +2,7 @@ REDES GAMES
 ===========
 
 Aprende a configurar routers y switches Cisco (como en Packet Tracer)
-jugando: misiones, contrarreloj y caza de banderas.
+jugando: misiones, juegos de subnetting, paquetes y averías, y retos tipo examen.
 
 COMO ABRIRLO
 ------------

@@ -17,7 +17,7 @@
     { n: 3, name: 'Nivel 3 · Examen', list: MISSIONS.filter((l) => l.level === 3) },
   ].filter((lv) => lv.list.length);
   const levelOf = (l) => LEVELS.find((lv) => lv.list.includes(l)) || LEVELS[0];
-  for (const lv of LEVELS) lv.games = LESSONS.filter((l) => (l.mode === 'arcade' || l.mode === 'ctf') && (l.glevel || 1) === lv.n);
+  for (const lv of LEVELS) lv.games = LESSONS.filter((l) => (l.mode === 'arcade' || l.mode === 'ctf' || l.mode === 'play') && (l.glevel || 1) === lv.n);
   const gotFlags = (l) => setOf(l).flags.filter((f) => flags.has(f.id)).length;
 
   const $ = (s) => document.querySelector(s);
@@ -81,16 +81,17 @@
     toasts: $('#toasts'),
   };
 
+  /* umbrales escalados para que el último rango (≈85 % del XP máximo, 4360 sin contar el contrarreloj) llegue al terminarlo todo jugando bien */
   const RANKS = [
     [0, 'Novato'],
-    [100, 'Becario'],
-    [250, 'Técnico'],
-    [450, 'Cablista'],
-    [700, 'Administrador'],
-    [1000, 'CCNA en prácticas'],
-    [1400, 'Ingeniero de red'],
-    [1900, 'Arquitecto'],
-    [2500, 'Leyenda del rack'],
+    [150, 'Becario'],
+    [370, 'Técnico'],
+    [670, 'Cablista'],
+    [1040, 'Administrador'],
+    [1480, 'CCNA en prácticas'],
+    [2070, 'Ingeniero de red'],
+    [2810, 'Arquitecto'],
+    [3700, 'Leyenda del rack'],
   ];
   const BADGES = [
     { id: 'first', icon: '👋', name: 'Hola, router', how: 'Escribe tu primera orden.' },
@@ -103,10 +104,10 @@
     { id: 'nohint', icon: '🧠', name: 'De memoria', how: 'Completa una misión sin pedir pistas.' },
     { id: 'cable', icon: '🔌', name: 'Manitas', how: 'Pon el cable correcto a la primera.' },
     { id: 'remote', icon: '🛰️', name: 'A distancia', how: 'Entra en un equipo por Telnet o SSH.' },
-    { id: 'speed', icon: '🚀', name: 'Dedos rápidos', how: 'Acierta 8 retos en un contrarreloj.' },
-    { id: 'ctf', icon: '🚩', name: 'Cazabanderas', how: 'Captura las banderas de un nivel.' },
+    { id: 'subnet', icon: '🧮', name: 'Calculadora humana', how: 'Saca un 100 % en Subnetting exprés.' },
+    { id: 'paquete', icon: '📦', name: 'Ojo de Wireshark', how: 'Sigue al paquete sin un solo fallo.' },
+    { id: 'averias', icon: '🔧', name: 'Técnico de guardia', how: 'Resuelve las 8 averías a la primera.' },
     { id: 'reto', icon: '📝', name: 'Matrícula', how: 'Saca un 10 en un reto del lienzo libre.' },
-    { id: 'ctfall', icon: '🏴‍☠️', name: 'Cazador total', how: 'Captura las banderas de todos los niveles.' },
     { id: 'all', icon: '👑', name: 'Nivel 1 superado', how: 'Completa todas las misiones del nivel 1.' },
     { id: 'all2', icon: '🎓', name: 'Nivel 2 superado', how: 'Completa todas las misiones del nivel 2.' },
     { id: 'all3', icon: '💎', name: 'Listo para el examen', how: 'Completa todas las misiones del nivel 3.' },
@@ -142,7 +143,7 @@
     $('#hudRank').textContent = RANKS[i][1];
     $('#hudXp').textContent = next ? `${xp} / ${next[0]} XP` : `${xp} XP`;
     $('#hudFill').style.width = (next ? ((xp - RANKS[i][0]) / (next[0] - RANKS[i][0])) * 100 : 100) + '%';
-    $('#badgeCount').textContent = `${badges.size}/${BADGES.length}`;
+    $('#badgeCount').textContent = badges.has('secreto') ? `${BADGES.length}/${BADGES.length} + ${SECRET.icon}` : `${BADGES.filter((x) => badges.has(x.id)).length}/${BADGES.length}`;
   }
   function addXp(n) {
     if (!n) return;
@@ -159,14 +160,33 @@
       confetti(70);
     }
   }
+  /* logro oculto: no aparece en la lista ni en el contador hasta conseguirlo */
+  const SECRET = { id: 'secreto', icon: '🌐', name: 'Red convergida', how: 'Lo has completado absolutamente todo: todas las misiones, todos los juegos y todos los logros. Todos los pings responden.', ref: 'Logro oculto' };
+  function checkSecret() {
+    if (badges.has(SECRET.id)) return;
+    const allMissions = LESSONS.filter((l) => !l.mode).every((l) => done.has(l.id));
+    const allGames = LESSONS.filter((l) => l.mode === 'play' || l.mode === 'ctf').every((l) => l.mode === 'ctf' ? setOf(l).flags.every((f) => flags.has(f.id)) : done.has(l.id));
+    const allBadges = BADGES.every((x) => badges.has(x.id));
+    if (!(allMissions && allGames && allBadges)) return;
+    badges.add(SECRET.id);
+    store.set('rg.badges', [...badges]);
+    setTimeout(() => {
+      toast(SECRET.icon, '¡Logro oculto desbloqueado!', SECRET.name);
+      confetti(160);
+      say('¡Lo has completado TODO! Mira tus logros: hay uno que nadie más ve.', 'happy');
+      addXp(100);
+    }, 900);
+  }
   function award(id) {
     if (badges.has(id)) return;
     const b = BADGES.find((x) => x.id === id);
+    if (!b) return;
     if (!b) return;
     badges.add(id);
     store.set('rg.badges', [...badges]);
     toast(b.icon, 'Logro desbloqueado', b.name);
     addXp(20);
+    checkSecret();
   }
   function toast(icon, title, text) {
     const t = document.createElement('div');
@@ -1305,6 +1325,10 @@
     };
     const gameSub = (l) => {
       const best = store.get(bestKey(l), 0);
+      if (l.mode === 'play') {
+        const pb = store.get('rg.pbest.' + l.id, null);
+        return pb == null ? l.tag : `Mejor: ${pb} %`;
+      }
       return l.mode === 'arcade' ? (best ? `Récord: ${best}` : l.tag) : `${gotFlags(l)}/${setOf(l).flags.length} banderas`;
     };
     el.sidebar.innerHTML =
@@ -1357,6 +1381,7 @@
     return hintButton(s.hint);
   }
   function renderPanel() {
+    if (lesson.mode === 'play') return renderPlay();
     if (lesson.mode === 'arcade') return renderArcade();
     if (lesson.mode === 'ctf') return renderCtf();
     renderLesson();
@@ -1402,6 +1427,7 @@
     if (cur && stepIdx > 0) cur.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
   el.panel.addEventListener('click', (e) => {
+    if (!e.target.isConnected || e.target.closest('.play-root')) return; /* los juegos gestionan sus propios botones */
     if (e.target.id === 'btnHint') {
       hintShown = true;
       usedHint = true;
@@ -1470,6 +1496,7 @@
       say('¡Misión superada! Eres una máquina.', 'happy');
       confetti(90);
       if (fresh) addXp(gain + 50);
+      setTimeout(checkSecret, 50);
       if (!usedHint) award('nohint');
       for (const lv of LEVELS) if (lv.list.every((l) => done.has(l.id))) award(lv.n === 1 ? 'all' : 'all' + lv.n);
       renderSidebar();
@@ -1591,7 +1618,12 @@
     print(`⏱ ¡Tiempo! ${arc.score} puntos.`, 'ok');
     say(arc.record ? '¡Nuevo récord! Enséñaselo a alguien.' : arc.hits ? 'Nada mal. ¿Otra para superarte?' : 'El primero siempre cuesta. Repasa una misión y vuelve.', arc.hits ? 'happy' : '');
     if (arc.record) confetti(90);
-    addXp(arc.hits * 5);
+    /* XP solo por lo que superas tu récord de aciertos: repetir no sube de rango */
+    const hitsBest = store.get(bestKey(lesson) + 'h', 0);
+    if (arc.hits > hitsBest) {
+      store.set(bestKey(lesson) + 'h', arc.hits);
+      addXp((arc.hits - hitsBest) * 5);
+    }
     if (arc.hits >= 8) award('speed');
     renderArcade();
     renderSidebar();
@@ -2475,6 +2507,7 @@
     renderSidebar();
   }
   el.panel.addEventListener('click', (e) => {
+    if (!e.target.isConnected || e.target.closest('.play-root')) return;
     const s = e.target.closest('[data-reto]');
     if (s) {
       if (net.order.length && confirm('¿Empezar el reto con el lienzo vacío?\n\nAceptar: vacía el lienzo (puedes deshacer con Ctrl+Z).\nCancelar: sigue con lo que tienes dibujado.')) {
@@ -2814,15 +2847,76 @@
       buildWorld(n, null);
       return;
     }
-    const n = lesson.scene();
+    /* los juegos propios no usan red: se deja una vacía para que la consola no falle */
+    const n = lesson.mode === 'play' ? new window.NET.Network() : lesson.scene();
     if (lesson.setup) lesson.setup(n);
     buildWorld(n, lesson.start);
   }
+  /* ---------- juegos propios («play») ---------- */
+  let playCleanup = null;
+  function renderPlay() {
+    const g = window.PLAY && window.PLAY[lesson.game];
+    const id = lesson.id;
+    el.panel.innerHTML =
+      `<div class="kicker">Zona de juego · ${esc(lesson.tag)}</div><h1>${esc(lesson.title)}</h1>` +
+      `<div class="pl-bar"><span>${(() => { const pb = store.get('rg.pbest.' + id, null); return pb == null ? 'Sin jugar' : 'Tu mejor nota: ' + pb + ' %'; })()}</span><button type="button" class="link" id="plRestart">↻ Reiniciar</button></div>` +
+      '<div class="play-root" id="playRoot"></div>';
+    $('#plRestart').addEventListener('click', () => {
+      if (playCleanup) {
+        try {
+          playCleanup();
+        } catch (e) {}
+        playCleanup = null;
+      }
+      renderPlay();
+    });
+    if (!g) {
+      $('#playRoot').textContent = 'Este juego no se ha cargado.';
+      return;
+    }
+    const api = {
+      say,
+      award,
+      esc,
+      confetti,
+      store: { get: (k, d) => store.get('rg.p.' + id + '.' + k, d), set: (k, v) => store.set('rg.p.' + id + '.' + k, v) },
+      /* nota de 0 a 100: da XP solo por lo que mejoras tu mejor nota (hasta 100) y 20 la primera vez */
+      done(score, msg) {
+        score = Math.max(0, Math.min(100, Math.round(score)));
+        const prev = store.get('rg.pbest.' + id, null);
+        if (prev == null || score > prev) {
+          store.set('rg.pbest.' + id, score);
+          addXp(score - (prev || 0) + (prev == null ? 20 : 0));
+        }
+        if (score >= 60 && !done.has(id)) {
+          done.add(id);
+          store.set('rg.done', [...done]);
+        }
+        if (msg) say(msg, score >= 60 ? 'happy' : 'oops');
+        if (score >= 100) confetti(90);
+        renderSidebar();
+        setTimeout(checkSecret, 50);
+      },
+      onLeave: (fn) => (playCleanup = fn),
+    };
+    g.mount($('#playRoot'), api);
+    /* los clics del juego no llegan a los atajos del panel (data-next, etc.) */
+    $('#playRoot').addEventListener('click', (e) => e.stopPropagation());
+    $('#playRoot').addEventListener('keydown', (e) => e.stopPropagation());
+  }
+
   function startLesson(id) {
+    if (playCleanup) {
+      try {
+        playCleanup();
+      } catch (e) {}
+      playCleanup = null;
+    }
     arcStop();
     arc = null;
     el.pick.hidden = true;
     lesson = LESSONS.find((l) => l.id === id) || LESSONS[0];
+    document.body.classList.toggle('playing', lesson.mode === 'play');
     if (closed.delete(foldOf(lesson))) store.set('rg.closed', [...closed]);
     stepIdx = 0;
     hintShown = false;
@@ -2881,6 +2975,7 @@
       '<div class="ranks">' +
       RANKS.map(([min, name], k) => `<div class="${k < i ? 'past' : k === i ? 'now' : ''}"><b>${k + 1}</b><span>${name}</span><small>${min} XP</small></div>`).join('') +
       '</div><div class="badge-grid">' +
+      (badges.has(SECRET.id) ? `<article class="on secret"><span>${SECRET.icon}</span><b>${esc(SECRET.name)}</b><small>${esc(SECRET.how)}</small></article>` : '') +
       BADGES.map((b) => `<article class="${badges.has(b.id) ? 'on' : ''}"><span>${badges.has(b.id) ? b.icon : '🔒'}</span><b>${esc(b.name)}</b><small>${esc(b.how)}</small></article>`).join('') +
       '</div>';
     trophy.showModal();

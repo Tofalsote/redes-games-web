@@ -16,7 +16,11 @@ Funciona en Windows, macOS y Linux con un navegador actual. No necesita instalac
 - **Nivel 1 · Primeros pasos** (6 misiones): modos de IOS, atajos y `?`, contraseñas, interfaces, IP de gestión del switch, IP de los PCs y guardar la configuración.
 - **Nivel 2 · Conectar redes** (7 misiones): qué cable va en cada sitio, módulo HWIC-2T, un router con dos redes, enlace serie y `clock rate`, rutas estáticas, ruta por defecto y DHCP.
 - **Nivel 3 · Examen** (6 misiones): VLAN, router-on-a-stick, SSH, OSPF, DHCP relay (`ip helper-address`) y un simulacro de examen.
-- Cada nivel tiene su **zona de juego**: un contrarreloj y una caza de banderas. Las banderas son números aleatorios distintos en cada navegador.
+- Cada nivel tiene su **zona de juego** con un juego propio de redes:
+  - **Subnetting exprés** (nivel 1): IP aleatorias para sacar máscara, red, broadcast, rango y hosts.
+  - **Sigue al paquete** (nivel 2): un ping salto a salto: puerta de enlace, ARP, IP y MAC en cada tramo, TTL.
+  - **Detective de averías** (nivel 3): salidas de `show` reales y un fallo que encontrar, como en el examen.
+- Puntos y rangos: el último rango llega al terminarlo todo jugando bien; repetir un juego solo suma si mejoras tu récord. Y hay un logro oculto para quien lo complete al 100 %.
 - **Laboratorio libre** con 2 routers, 2 switches y 4 PCs sin configurar.
 - **Dibuja tu red**: lienzo libre como el de Packet Tracer. Arrastras equipos (2911, 1941, 2960, PC, servidor), tiras cables eligiendo puerto o con el cable automático, envías PDU simples, pones notas y zonas, deshaces y rehaces, haces zoom, y guardas o abres la red como archivo `.json`.
 - **Retos con nota** sobre el lienzo: 5 enunciados de examen que se corrigen solos (nota sobre 10).
@@ -39,7 +43,8 @@ No es un IOS completo: cubre lo que se pide en ASIR.
 | Archivo | Contenido |
 | --- | --- |
 | `js/lessons.js` | Misiones: texto, pasos, pista y comprobación de cada paso |
-| `js/games.js` | Retos del contrarreloj y banderas de cada nivel |
+| `js/games.js` | Escenarios de práctica de la zona de juego antigua |
+| `js/play.js` | Juegos de la zona de juego |
 | `js/scenes.js` | Escenarios: equipos, posiciones en el dibujo, cables y configuración previa |
 | `js/retos.js` | Retos del lienzo libre y sus criterios de corrección |
 | `js/ios.js` | Consola de IOS y de los PCs: órdenes, `show`, mensajes y chuleta |

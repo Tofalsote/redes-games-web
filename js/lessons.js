@@ -735,12 +735,10 @@
     },
 
     /* ================= ZONA DE JUEGO Y PRÁCTICA LIBRE ================= */
-    { id: 'arcade1', mode: 'arcade', glevel: 1, icon: '⚡', title: 'Contrarreloj', tag: 'Modos, claves e interfaces', steps: [] },
-    { id: 'ctf1', mode: 'ctf', glevel: 1, icon: '🚩', title: 'Caza de banderas', tag: 'El rack misterioso', steps: [], outro: 'Sabes moverte por un router y un switch ajenos. Eso es medio examen.' },
-    { id: 'arcade2', mode: 'arcade', glevel: 2, icon: '⚡', title: 'Contrarreloj', tag: 'Rutas, serie y DHCP', steps: [] },
-    { id: 'ctf2', mode: 'ctf', glevel: 2, icon: '🚩', title: 'Caza de banderas', tag: 'La red rota', steps: [], outro: 'Has arreglado rutas y te has colado por Telnet. Ya piensas como un administrador de red.' },
-    { id: 'arcade3', mode: 'arcade', glevel: 3, icon: '⚡', title: 'Contrarreloj', tag: 'VLAN, SSH y OSPF', steps: [] },
-    { id: 'ctf3', mode: 'ctf', glevel: 3, icon: '🚩', title: 'Caza de banderas', tag: 'La empresa', steps: [], outro: 'VLAN, SSH, OSPF y relay: el examen ya no te puede sorprender.' },
+    /* Zona de juego: juegos propios de redes (js/play.js), uno por nivel */
+    { id: 'subnet', mode: 'play', game: 'subnet', glevel: 1, icon: '🧮', title: 'Subnetting exprés', tag: 'Red, broadcast y hosts', say: 'Ocho IP para calcular su red. Lo que más cae en el examen.', steps: [] },
+    { id: 'paquete', mode: 'play', game: 'paquete', glevel: 2, icon: '📦', title: 'Sigue al paquete', tag: 'ARP, rutas y TTL', say: 'Acompaña a un ping salto a salto: qué MAC, qué IP, qué TTL.', steps: [] },
+    { id: 'averias', mode: 'play', game: 'averias', glevel: 3, icon: '🔧', title: 'Detective de averías', tag: 'Lee los show', say: 'Te llaman porque algo no funciona. Las salidas de show tienen la respuesta.', steps: [] },
     {
       id: 'dibuja',
       mode: 'free',
