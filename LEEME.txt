@@ -1,0 +1,30 @@
+REDES GAMES
+===========
+
+Aprende a configurar routers y switches Cisco (como en Packet Tracer)
+jugando: misiones, contrarreloj y caza de banderas.
+
+COMO ABRIRLO
+------------
+1. Descomprime este zip entero en una carpeta
+   (clic derecho > "Extraer todo"; no abras los archivos desde dentro del zip).
+2. Entra en la carpeta redes_games y haz doble clic en index.html.
+3. Se abre en tu navegador. Ya puedes jugar.
+
+QUE NECESITAS
+-------------
+- Un navegador actual: Chrome, Edge, Firefox, Brave o Safari.
+- Nada mas. No hace falta Packet Tracer y funciona sin Internet.
+- Mejor en ordenador que en movil: hay que escribir.
+
+SI ALGO NO VA
+-------------
+- Se ve sin colores o no responde: no lo has descomprimido, o has movido
+  index.html fuera de su carpeta. Tiene que estar junto a las carpetas css y js.
+- Tu progreso se guarda en tu navegador. Si cambias de navegador o de ordenador,
+  empiezas de cero. Para borrarlo: boton "Empezar de cero", al final del menu.
+
+ES SEGURO
+---------
+Todo es un simulador. Los routers que rompas aqui no existen fuera de la pagina,
+y la pagina no envia datos a ningun sitio.

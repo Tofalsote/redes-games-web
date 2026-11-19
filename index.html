@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Redes Games</title>
+  <meta name="description" content="Aprende a configurar routers y switches Cisco como en Packet Tracer, jugando: misiones, contrarreloj y caza de banderas.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 fill=%27%23d93a24%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-family=%27Georgia,serif%27 font-style=%27italic%27 font-weight=%27700%27 font-size=%2726%27 text-anchor=%27middle%27 fill=%27%23fff%27%3EIOS%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">IOS</span>
+      <div>
+        <strong>Redes Games</strong>
+        <small>Packet Tracer · aprende jugando</small>
+      </div>
+    </div>
+
+    <button class="hud" id="hud" type="button" title="Ver rangos y logros">
+      <span class="hud-level" id="hudLevel">1</span>
+      <span class="hud-info">
+        <span class="hud-row"><b id="hudRank">Novato</b><small id="hudXp">0 XP</small></span>
+        <span class="bar"><i id="hudFill"></i></span>
+      </span>
+    </button>
+
+    <button class="btn" id="btnTrophy" type="button">🏆 <span id="badgeCount">0/10</span></button>
+    <button class="btn" id="btnCheat" type="button">Chuleta</button>
+    <button class="btn icon" id="btnTheme" type="button" aria-label="Cambiar entre tema oscuro y claro" title="Tema oscuro / claro">🌗</button>
+  </header>
+
+  <main class="layout">
+    <nav id="sidebar" aria-label="Misiones y juegos"></nav>
+
+    <section id="lesson">
+      <div class="buddy" id="buddy">
+        <svg viewBox="0 0 64 66" aria-hidden="true">
+          <path class="px-body" d="M11 36c-6 4-7 13-4 17l6-8zM53 36c6 4 7 13 4 17l-6-8z"/>
+          <ellipse class="px-body" cx="32" cy="36" rx="21" ry="25"/>
+          <ellipse cx="32" cy="43" rx="13.500" ry="16" fill="#fff"/>
+          <circle cx="24.500" cy="24" r="6" fill="#fff"/>
+          <circle cx="39.500" cy="24" r="6" fill="#fff"/>
+          <circle class="px-eye" cx="26" cy="25" r="2.600"/>
+          <circle class="px-eye" cx="38" cy="25" r="2.600"/>
+          <path d="M26.500 31.500h11L32 38z" fill="#ff8a3d"/>
+          <ellipse cx="23" cy="61.500" rx="7.500" ry="3.200" fill="#ff8a3d"/>
+          <ellipse cx="41" cy="61.500" rx="7.500" ry="3.200" fill="#ff8a3d"/>
+        </svg>
+        <p class="bubble" id="say" aria-live="polite"></p>
+      </div>
+      <div id="panel"></div>
+    </section>
+
+    <section class="work">
+      <div class="term" id="term">
+        <div class="term-bar">
+          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="term-title" id="termTitle">R1 · consola</span>
+          <button class="term-btn" id="btnReset" type="button" title="Deja la red como al principio de la misión">Reiniciar</button>
+        </div>
+        <div class="devtabs" id="devTabs" role="tablist" aria-label="Equipo cuya consola usas"></div>
+        <div class="term-body" id="termBody">
+          <div id="termOut"></div>
+          <label class="term-line">
+            <span id="prompt"></span>
+            <input id="termIn" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Escribe una orden">
+          </label>
+        </div>
+      </div>
+
+      <div class="explorer">
+        <div class="exp-bar">
+          <button class="tab on" type="button" data-tab="topo">Topología</button>
+          <button class="tab" type="button" data-tab="phys">Físico</button>
+          <span class="crumbs" id="topoInfo"></span>
+        </div>
+        <div class="sbar" id="sbar" hidden></div>
+        <div class="topo" id="topo"></div>
+        <div class="phys" id="phys" hidden></div>
+        <div class="legend" id="legend" aria-label="Leyenda">
+          <span><svg viewBox="0 0 26 10" aria-hidden="true"><path class="l-st" d="M1 5h24"/></svg>Directo</span>
+          <span><svg viewBox="0 0 26 10" aria-hidden="true"><path class="l-cr" d="M1 5h24"/></svg>Cruzado</span>
+          <span><svg viewBox="0 0 26 10" aria-hidden="true"><path class="l-se" d="M1 5h7l2 -4 3 8 2 -4h10"/></svg>Serie DCE/DTE</span>
+          <span><svg viewBox="0 0 26 10" aria-hidden="true"><path class="l-co" d="M1 5h24"/></svg>Consola</span>
+          <span class="sep" aria-hidden="true"></span>
+          <span><i class="up"></i>up/up</span>
+          <span><i class="half"></i>sin protocolo</span>
+          <span><i class="down"></i>caído / apagado</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="cablepick" id="cablePick" hidden></div>
+  <input type="file" id="sbFile" accept=".json,application/json" hidden>
+
+  <dialog id="cheat" class="dlg">
+    <div class="dlg-head">
+      <strong>Chuleta de órdenes</strong>
+      <input id="cheatSearch" type="search" placeholder="Buscar: vlan, ruta, ssh, dhcp…" aria-label="Buscar en la chuleta">
+      <button class="btn icon dlg-close" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="dlg-body" id="cheatBody"></div>
+  </dialog>
+
+  <dialog id="devwin" class="dlg devwin" aria-labelledby="dwTitle">
+    <div class="dlg-head">
+      <strong id="dwTitle">R1</strong>
+      <span class="dw-sub" id="dwSub"></span>
+      <span class="grow"></span>
+      <button class="btn icon dlg-close" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="dw-tabs" id="dwTabs" role="tablist"></div>
+    <div class="dlg-body" id="dwBody"></div>
+  </dialog>
+
+  <dialog id="trophy" class="dlg">
+    <div class="dlg-head">
+      <strong>Rangos y logros</strong>
+      <span class="grow"></span>
+      <button class="btn icon dlg-close" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="dlg-body" id="trophyBody"></div>
+  </dialog>
+
+  <div id="toasts" aria-live="polite"></div>
+
+  <script src="js/net.js"></script>
+  <script src="js/ios.js"></script>
+  <script src="js/scenes.js"></script>
+  <script src="js/lessons.js"></script>
+  <script src="js/games.js"></script>
+  <script src="js/retos.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
